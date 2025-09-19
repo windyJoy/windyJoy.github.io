@@ -2,13 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://windyJoy.github.io/posts/archlinux%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</loc>
-    <lastmod>2025-09-18T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://windyJoy.github.io/posts/</loc>
-    <lastmod>2025-09-18T00:00:00+00:00</lastmod>
+    <lastmod>2025-09-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://windyJoy.github.io/</loc>
+    <lastmod>2025-09-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://windyJoy.github.io/posts/%E5%AD%A6%E6%9C%AF%E4%BA%A7%E4%B8%9A%E5%88%9D%E6%8E%A2/</loc>
+    <lastmod>2025-09-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://windyJoy.github.io/posts/archlinux%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</loc>
     <lastmod>2025-09-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://windyJoy.github.io/posts/%E4%B8%AA%E4%BA%BA%E6%A1%A3%E6%A1%88/</loc>
