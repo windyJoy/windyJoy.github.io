@@ -99,8 +99,8 @@
   "keywords": [
     
   ],
-  "articleBody": "在这篇文章中，我将分享我安装arch Linux的过程。\n",
-  "wordCount" : "2",
+  "articleBody": "在这篇文章中，我将分享我安装arch Linux的过程。\n前言 archlinux是一款轻量级且高度可定制的Linux发行版，适合那些希望深入了解Linux系统并根据个人需求进行配置的用户。它以简洁、灵活和滚动更新的特点著称，允许用户从最基本的系统开始，逐步添加所需的软件包和功能。\n在了解到archlinux后，让我这个对Linux系统感兴趣的小白产生了接触它的强烈意愿。于是乎在二手平台上花了688买了一个14年发行的电脑：ThinkPad E450。14英寸的屏幕，i7-5500U处理器，ADM-Radeon R7 M260显卡，8GB内存，256G硬盘。然后在这台老机子上开始了arch Linux的探索之旅。 安装arch Linux 安装前的准备 首先安装arclinux,是一定要去参考archlinux的官方安装指南的。通常在一台电脑上安装一个新系统要准备两样东西：\n一台能联网的电脑 一个U盘 在那台能联网的电脑上，下载archlinux的镜像文件，然后使用rufus等制作USB启动盘的软件，将镜像文件写入到U盘中，然后将U盘插入待装archlinux系统的电脑上开始安装过程。\n进入安装环境 将电脑重启，进入BIOS设置，将启动顺序设置为U盘启动，然后保存并退出BIOS设置。在电脑下次启动时，就会进入U盘中arch系统的终端界面。首先我们要连接网络，为后续下载软件包做准备。\n连接网络 首先，需要使用iwctl工具去连接到WiFi网络。具体步骤如下：\n在终端中输入iwctl命令进入iwctl工具。 然后输入device list命令查看系统中可用的网络设备。 输入station \u003c设备名\u003e scan命令扫描可用的WiFi网络。 输入station \u003c设备名\u003e get-networks命令查看扫描到的WiFi网络列表。 输入station \u003c设备名\u003e connect \u003c网络名\u003e命令连接到指定的WiFi网络。 在连接成功后，输入exit命令退出iwctl工具。使用ping工具检查一下网络连接是否成功： ping archlinux.org 如果能够成功ping通archlinux的官方网站，说明网络连接已经成功。\n更新系统时间 使用timedatectl工具确保系统时间是同步的。\n创建硬盘分区 内置硬盘、U盘或者移动硬盘等类型磁盘，将会被识别为/dev/下的设备文件。例如/dev/sda、/dev/sdb等。可以使用lsblk工具查看电脑上有几块磁盘。注意我们插进去的U盘也会被识别。通过磁盘的大小可以分辨出哪一个是电脑内置的256G硬盘，哪一个是刚插进去的启动盘。我电脑硬盘对应的设备文件名为/dev/sda。使用fdisk等分区工具修改/dev/sda的硬盘分区：\nfdisk /dev/sda 在fdisk交互界面中，使用m命令查看帮助信息。使用g命令创建一个新的GPT分区表。然后使用n命令创建新的分区。根据提示输入分区号、起始扇区和结束扇区等信息。\ng n Partition number (1-128, default 1):1 First sector (2048-500118191, default 2048): Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-500118191, default 500118191):+512M n Partition number (2-128, default 2):2 First sector (526336-500118191, default 526336): Last sector, +/-sectors or +/-size{K,M,G,T,P} (526336-500118191, default 500118191):+4GB n Partition number (2-128, default 2):3 First sector (4720640-500118191, default 4720640): Last sector, +/-sectors or +/-size{K,M,G,T,P} (4720640-500118191, default 500118191):500118191 以上创建了一个分区表，该分区表包含三个分区，第一块是512M的EFI系统分区，第二块是4G的交换空间分区，第三块是根目录分区。注意这个时候电脑的硬盘还没有被格式化，只是创建了一个分区表，就像装修房子一样，做好了设计图纸，还没有把这个设计图纸应用房子上。可以使用p命令显示更改内容，q放弃更改，w命令将更改写入硬盘并退出程序。写入之后，需要为每个分区设置不同的文件系统，就像房子内需要划定每个房间是用来干什么的一样。\nmkfs.ext4 /dev/sda3 mkfs.fat -F 32 /dev/sda1 mkswap /dev/sda2 上述命令依次将sda的第三块分区格式化为ext4文件系统，第一块分区格式化为FAT32文件系统，第二块分区格式化为交换空间文件系统。\n挂载分区 挂载分区就是将硬盘上的分区和Linux系统的目录关联起来。首先将根目录分区挂载到/mnt目录下：\nmount /dev/sda3 /mnt 在挂载根目录分区后，在/mnt文件夹下创建boot文件夹，作为EFI系统分区的挂载点。然后将EFI系统分区挂载到/mnt/boot目录下：\nmkdir /mnt/boot mount /dev/sda1 /mnt/boot 使用swapon工具启用交换空间分区：\nswapon /dev/sda2 开始安装系统 系统的文件/etc/pacman.d/mirrorlist中定义了软件包会从哪个镜像站下载。该文件由reflector工具生成，reflector工具会根据当前网络环境自动选择最优的镜像站。由于在中国，所以需要重新配置一下reflector工具：\nreflector --country China --age 12 --protocl https --sort rate --save /etc/pacman.d/mirrorlist 配置好后，检查一下/etc/pacman.d/mirrorlist文件的内容，确认是否是中国的镜像站，例如清华源、阿里源等。再确定镜像站配置成功后，使用pacstrap脚本，将archlinux的基本系统以及需要的软件包安装到/mnt目录下：\npacstrap -K /mnt base base-devel linux linux-firmware intel-ucode vim networkmanager 配置系统 生成fstab文件 生成fstab文件以使需要的文件系统(如启动目录/boot)在启动时被自动挂载:\ngenfstab -U /mnt \u003e /mnt/etc/fstab 切换到新系统 在此刻之前，都是在U盘中的archlinux系统中，现在需要切换到刚刚安装的新系统的根目录下：\narch-chroot /mnt 设置时间和时区 通过以下命令设置系统的时区，例如设置为上海时间：\nln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime hwclock --systohc 区域和本地化设置 使用vim编辑器编辑/etc/locale.gen文件，取消掉en_US.UTF-8 UTF-8前的注释(#)，接着执行以下命令以生成 locale 信息：\nlocale-gen 然后创建/etc/locale.conf文件，写入以下内容以设置系统语言环境：\necho \"LANG=en_US.UTF-8\" \u003e /etc/locale.conf 网络配置 使用vim编辑器编辑/etc/hostname文件，写入系统的主机名，例如archlinux。\n设置root密码 使用passwd命令设置root用户的密码：\npasswd 安装引导加载程序 引导加载程序是用来启动操作系统的程序，在archlinux中，常用的引导加载程序有GRUB和systemd-boot。这里选择安装GRUB引导加载程序。\npacman -S grub efibootmgr grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB grub-mkconfig -o /boot/grub/grub.cfg 重新启动计算机 输入exit或按Ctrl+d退出chroot环境。执行以下命令卸载挂载的分区：\numount -R /mnt 最后通过执行reboot命令重新启动计算机，然后使用root账户登录到新系统。\n",
+  "wordCount" : "205",
   "inLanguage": "en",
   "datePublished": "2025-09-18T00:00:00Z",
   "dateModified": "2025-09-18T00:00:00Z",
@@ -178,12 +178,164 @@
     <div class="post-meta"><span title='2025-09-18 00:00:00 +0000 UTC'>September 18, 2025</span>&nbsp;·&nbsp;windyJoy
 
 </div>
-  </header> 
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85arch-linux" aria-label="安装arch Linux">安装arch Linux</a><ul>
+                        
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85%e5%89%8d%e7%9a%84%e5%87%86%e5%a4%87" aria-label="安装前的准备">安装前的准备</a><ul>
+                        
+                <li>
+                    <a href="#%e8%bf%9b%e5%85%a5%e5%ae%89%e8%a3%85%e7%8e%af%e5%a2%83" aria-label="进入安装环境">进入安装环境</a></li>
+                <li>
+                    <a href="#%e8%bf%9e%e6%8e%a5%e7%bd%91%e7%bb%9c" aria-label="连接网络">连接网络</a></li>
+                <li>
+                    <a href="#%e6%9b%b4%e6%96%b0%e7%b3%bb%e7%bb%9f%e6%97%b6%e9%97%b4" aria-label="更新系统时间">更新系统时间</a></li>
+                <li>
+                    <a href="#%e5%88%9b%e5%bb%ba%e7%a1%ac%e7%9b%98%e5%88%86%e5%8c%ba" aria-label="创建硬盘分区">创建硬盘分区</a></li>
+                <li>
+                    <a href="#%e6%8c%82%e8%bd%bd%e5%88%86%e5%8c%ba" aria-label="挂载分区">挂载分区</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%bc%80%e5%a7%8b%e5%ae%89%e8%a3%85%e7%b3%bb%e7%bb%9f" aria-label="开始安装系统">开始安装系统</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e7%b3%bb%e7%bb%9f" aria-label="配置系统">配置系统</a><ul>
+                        
+                <li>
+                    <a href="#%e7%94%9f%e6%88%90fstab%e6%96%87%e4%bb%b6" aria-label="生成fstab文件">生成fstab文件</a></li>
+                <li>
+                    <a href="#%e5%88%87%e6%8d%a2%e5%88%b0%e6%96%b0%e7%b3%bb%e7%bb%9f" aria-label="切换到新系统">切换到新系统</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e7%bd%ae%e6%97%b6%e9%97%b4%e5%92%8c%e6%97%b6%e5%8c%ba" aria-label="设置时间和时区">设置时间和时区</a></li>
+                <li>
+                    <a href="#%e5%8c%ba%e5%9f%9f%e5%92%8c%e6%9c%ac%e5%9c%b0%e5%8c%96%e8%ae%be%e7%bd%ae" aria-label="区域和本地化设置">区域和本地化设置</a></li>
+                <li>
+                    <a href="#%e7%bd%91%e7%bb%9c%e9%85%8d%e7%bd%ae" aria-label="网络配置">网络配置</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e7%bd%aeroot%e5%af%86%e7%a0%81" aria-label="设置root密码">设置root密码</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85%e5%bc%95%e5%af%bc%e5%8a%a0%e8%bd%bd%e7%a8%8b%e5%ba%8f" aria-label="安装引导加载程序">安装引导加载程序</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%87%8d%e6%96%b0%e5%90%af%e5%8a%a8%e8%ae%a1%e7%ae%97%e6%9c%ba" aria-label="重新启动计算机">重新启动计算机</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
 
   <div class="post-content"><p>在这篇文章中，我将分享我安装arch Linux的过程。</p>
-<figure>
+<h1 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h1>
+<p><figure>
     <img loading="lazy" src="arch.png" width="350"/> 
 </figure>
+
+archlinux是一款轻量级且高度可定制的Linux发行版，适合那些希望深入了解Linux系统并根据个人需求进行配置的用户。它以简洁、灵活和滚动更新的特点著称，允许用户从最基本的系统开始，逐步添加所需的软件包和功能。</p>
+<p>在了解到archlinux后，让我这个对Linux系统感兴趣的小白产生了接触它的强烈意愿。于是乎在二手平台上花了688买了一个14年发行的电脑：ThinkPad E450。14英寸的屏幕，i7-5500U处理器，ADM-Radeon R7 M260显卡，8GB内存，256G硬盘。然后在这台老机子上开始了arch Linux的探索之旅。
+<figure>
+    <img loading="lazy" src="thinkpadE450.jpg" width="350"/> 
+</figure>
+</p>
+<hr>
+<h1 id="安装arch-linux">安装arch Linux<a hidden class="anchor" aria-hidden="true" href="#安装arch-linux">#</a></h1>
+<h2 id="安装前的准备">安装前的准备<a hidden class="anchor" aria-hidden="true" href="#安装前的准备">#</a></h2>
+<p>首先安装arclinux,是一定要去参考<a href="https://wiki.archlinux.org/title/Installation_guide">archlinux的官方安装指南</a>的。通常在一台电脑上安装一个新系统要准备两样东西：</p>
+<ul>
+<li>一台能联网的电脑</li>
+<li>一个U盘</li>
+</ul>
+<p>在那台能联网的电脑上，下载archlinux的镜像文件，然后使用<a href="https://rufus.ie/zh/">rufus</a>等制作USB启动盘的软件，将镜像文件写入到U盘中，然后将U盘插入待装archlinux系统的电脑上开始安装过程。</p>
+<h3 id="进入安装环境">进入安装环境<a hidden class="anchor" aria-hidden="true" href="#进入安装环境">#</a></h3>
+<p>将电脑重启，进入BIOS设置，将启动顺序设置为U盘启动，然后保存并退出BIOS设置。在电脑下次启动时，就会进入U盘中arch系统的终端界面。首先我们要连接网络，为后续下载软件包做准备。</p>
+<h3 id="连接网络">连接网络<a hidden class="anchor" aria-hidden="true" href="#连接网络">#</a></h3>
+<p>首先，需要使用iwctl工具去连接到WiFi网络。具体步骤如下：</p>
+<ol>
+<li>在终端中输入<code>iwctl</code>命令进入iwctl工具。</li>
+<li>然后输入<code>device list</code>命令查看系统中可用的网络设备。</li>
+<li>输入<code>station &lt;设备名&gt; scan</code>命令扫描可用的WiFi网络。</li>
+<li>输入<code>station &lt;设备名&gt; get-networks</code>命令查看扫描到的WiFi网络列表。</li>
+<li>输入<code>station &lt;设备名&gt; connect &lt;网络名&gt;</code>命令连接到指定的WiFi网络。
+在连接成功后，输入<code>exit</code>命令退出iwctl工具。使用ping工具检查一下网络连接是否成功：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ping archlinux.org
+</span></span></code></pre></div><p>如果能够成功ping通archlinux的官方网站，说明网络连接已经成功。</p>
+<h3 id="更新系统时间">更新系统时间<a hidden class="anchor" aria-hidden="true" href="#更新系统时间">#</a></h3>
+<p>使用timedatectl工具确保系统时间是同步的。</p>
+<h3 id="创建硬盘分区">创建硬盘分区<a hidden class="anchor" aria-hidden="true" href="#创建硬盘分区">#</a></h3>
+<p>内置硬盘、U盘或者移动硬盘等类型磁盘，将会被识别为/dev/下的设备文件。例如/dev/sda、/dev/sdb等。可以使用lsblk工具查看电脑上有几块磁盘。注意我们插进去的U盘也会被识别。通过磁盘的大小可以分辨出哪一个是电脑内置的256G硬盘，哪一个是刚插进去的启动盘。我电脑硬盘对应的设备文件名为/dev/sda。使用fdisk等分区工具修改/dev/sda的硬盘分区：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>fdisk /dev/sda
+</span></span></code></pre></div><p>在fdisk交互界面中，使用<code>m</code>命令查看帮助信息。使用<code>g</code>命令创建一个新的GPT分区表。然后使用<code>n</code>命令创建新的分区。根据提示输入分区号、起始扇区和结束扇区等信息。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>g
+</span></span><span style="display:flex;"><span>n
+</span></span><span style="display:flex;"><span>Partition number <span style="color:#f92672">(</span>1-128, default 1<span style="color:#f92672">)</span>:1
+</span></span><span style="display:flex;"><span>First sector <span style="color:#f92672">(</span>2048-500118191, default 2048<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>Last sector, +/-sectors or +/-size<span style="color:#f92672">{</span>K,M,G,T,P<span style="color:#f92672">}</span> <span style="color:#f92672">(</span>2048-500118191, default 500118191<span style="color:#f92672">)</span>:+512M
+</span></span><span style="display:flex;"><span>n
+</span></span><span style="display:flex;"><span>Partition number <span style="color:#f92672">(</span>2-128, default 2<span style="color:#f92672">)</span>:2
+</span></span><span style="display:flex;"><span>First sector <span style="color:#f92672">(</span>526336-500118191, default 526336<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>Last sector, +/-sectors or +/-size<span style="color:#f92672">{</span>K,M,G,T,P<span style="color:#f92672">}</span> <span style="color:#f92672">(</span>526336-500118191, default 500118191<span style="color:#f92672">)</span>:+4GB
+</span></span><span style="display:flex;"><span>n
+</span></span><span style="display:flex;"><span>Partition number <span style="color:#f92672">(</span>2-128, default 2<span style="color:#f92672">)</span>:3
+</span></span><span style="display:flex;"><span>First sector <span style="color:#f92672">(</span>4720640-500118191, default 4720640<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>Last sector, +/-sectors or +/-size<span style="color:#f92672">{</span>K,M,G,T,P<span style="color:#f92672">}</span> <span style="color:#f92672">(</span>4720640-500118191, default 500118191<span style="color:#f92672">)</span>:500118191
+</span></span></code></pre></div><p>以上创建了一个分区表，该分区表包含三个分区，第一块是512M的EFI系统分区，第二块是4G的交换空间分区，第三块是根目录分区。注意这个时候电脑的硬盘还没有被格式化，只是创建了一个分区表，就像装修房子一样，做好了设计图纸，还没有把这个设计图纸应用房子上。可以使用<code>p</code>命令显示更改内容，<code>q</code>放弃更改，<code>w</code>命令将更改写入硬盘并退出程序。写入之后，需要为每个分区设置不同的文件系统，就像房子内需要划定每个房间是用来干什么的一样。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkfs.ext4 /dev/sda3
+</span></span><span style="display:flex;"><span>mkfs.fat -F <span style="color:#ae81ff">32</span> /dev/sda1
+</span></span><span style="display:flex;"><span>mkswap /dev/sda2
+</span></span></code></pre></div><p>上述命令依次将sda的第三块分区格式化为ext4文件系统，第一块分区格式化为FAT32文件系统，第二块分区格式化为交换空间文件系统。</p>
+<h3 id="挂载分区">挂载分区<a hidden class="anchor" aria-hidden="true" href="#挂载分区">#</a></h3>
+<p>挂载分区就是将硬盘上的分区和Linux系统的目录关联起来。首先将根目录分区挂载到/mnt目录下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mount /dev/sda3 /mnt
+</span></span></code></pre></div><p>在挂载根目录分区后，在/mnt文件夹下创建boot文件夹，作为EFI系统分区的挂载点。然后将EFI系统分区挂载到/mnt/boot目录下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir /mnt/boot
+</span></span><span style="display:flex;"><span>mount /dev/sda1 /mnt/boot
+</span></span></code></pre></div><p>使用swapon工具启用交换空间分区：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swapon /dev/sda2
+</span></span></code></pre></div><h2 id="开始安装系统">开始安装系统<a hidden class="anchor" aria-hidden="true" href="#开始安装系统">#</a></h2>
+<p>系统的文件/etc/pacman.d/mirrorlist中定义了软件包会从哪个镜像站下载。该文件由reflector工具生成，reflector工具会根据当前网络环境自动选择最优的镜像站。由于在中国，所以需要重新配置一下reflector工具：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>reflector --country China --age <span style="color:#ae81ff">12</span> --protocl https --sort rate --save /etc/pacman.d/mirrorlist
+</span></span></code></pre></div><p>配置好后，检查一下/etc/pacman.d/mirrorlist文件的内容，确认是否是中国的镜像站，例如清华源、阿里源等。再确定镜像站配置成功后，使用pacstrap脚本，将archlinux的基本系统以及需要的软件包安装到/mnt目录下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pacstrap -K /mnt base base-devel linux linux-firmware intel-ucode vim networkmanager
+</span></span></code></pre></div><h2 id="配置系统">配置系统<a hidden class="anchor" aria-hidden="true" href="#配置系统">#</a></h2>
+<h3 id="生成fstab文件">生成fstab文件<a hidden class="anchor" aria-hidden="true" href="#生成fstab文件">#</a></h3>
+<p>生成fstab文件以使需要的文件系统(如启动目录/boot)在启动时被自动挂载:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>genfstab -U /mnt &gt; /mnt/etc/fstab
+</span></span></code></pre></div><h3 id="切换到新系统">切换到新系统<a hidden class="anchor" aria-hidden="true" href="#切换到新系统">#</a></h3>
+<p>在此刻之前，都是在U盘中的archlinux系统中，现在需要切换到刚刚安装的新系统的根目录下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>arch-chroot /mnt
+</span></span></code></pre></div><h3 id="设置时间和时区">设置时间和时区<a hidden class="anchor" aria-hidden="true" href="#设置时间和时区">#</a></h3>
+<p>通过以下命令设置系统的时区，例如设置为上海时间：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+</span></span><span style="display:flex;"><span>hwclock --systohc
+</span></span></code></pre></div><h3 id="区域和本地化设置">区域和本地化设置<a hidden class="anchor" aria-hidden="true" href="#区域和本地化设置">#</a></h3>
+<p>使用vim编辑器编辑/etc/locale.gen文件，取消掉en_US.UTF-8 UTF-8前的注释(#)，接着执行以下命令以生成 locale 信息：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>locale-gen
+</span></span></code></pre></div><p>然后创建/etc/locale.conf文件，写入以下内容以设置系统语言环境：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;LANG=en_US.UTF-8&#34;</span> &gt; /etc/locale.conf
+</span></span></code></pre></div><h3 id="网络配置">网络配置<a hidden class="anchor" aria-hidden="true" href="#网络配置">#</a></h3>
+<p>使用vim编辑器编辑/etc/hostname文件，写入系统的主机名，例如archlinux。</p>
+<h3 id="设置root密码">设置root密码<a hidden class="anchor" aria-hidden="true" href="#设置root密码">#</a></h3>
+<p>使用passwd命令设置root用户的密码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>passwd
+</span></span></code></pre></div><h3 id="安装引导加载程序">安装引导加载程序<a hidden class="anchor" aria-hidden="true" href="#安装引导加载程序">#</a></h3>
+<p>引导加载程序是用来启动操作系统的程序，在archlinux中，常用的引导加载程序有GRUB和systemd-boot。这里选择安装GRUB引导加载程序。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pacman -S grub efibootmgr
+</span></span><span style="display:flex;"><span>grub-install --target<span style="color:#f92672">=</span>x86_64-efi --efi-directory<span style="color:#f92672">=</span>/boot --bootloader-id<span style="color:#f92672">=</span>GRUB
+</span></span><span style="display:flex;"><span>grub-mkconfig -o /boot/grub/grub.cfg
+</span></span></code></pre></div><h2 id="重新启动计算机">重新启动计算机<a hidden class="anchor" aria-hidden="true" href="#重新启动计算机">#</a></h2>
+<p>输入exit或按Ctrl+d退出chroot环境。执行以下命令卸载挂载的分区：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>umount -R /mnt
+</span></span></code></pre></div><p>最后通过执行<code>reboot</code>命令重新启动计算机，然后使用root账户登录到新系统。</p>
 
   </div>
 
