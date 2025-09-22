@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><meta charset="utf-8">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="noindex, nofollow">
 <title>archLinux安装过程 | windyJoy</title>
 <meta name="keywords" content="">
 <meta name="description" content="在这篇文章中，我将分享我安装arch Linux的过程。">
 <meta name="author" content="windyJoy">
-<link rel="canonical" href="https://windyJoy.github.io/posts/archlinux%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/">
+<link rel="canonical" href="http://localhost:1313/posts/archlinux%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.08f7d74f0ada0f975d29ae436285b61ed7a719d05f350cb888d00341642995a2.css" integrity="sha256-CPfXTwraD5ddKa5DYoW2HtenGdBfNQy4iNADQWQplaI=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://windyJoy.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://windyJoy.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://windyJoy.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://windyJoy.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://windyJoy.github.io/safari-pinned-tab.svg">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="https://windyJoy.github.io/posts/archlinux%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/archlinux%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/">
 <noscript>
     <style>
         #theme-toggle,
@@ -55,73 +55,7 @@
         }
 
     </style>
-</noscript><meta property="og:url" content="https://windyJoy.github.io/posts/archlinux%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/">
-  <meta property="og:site_name" content="windyJoy">
-  <meta property="og:title" content="archLinux安装过程">
-  <meta property="og:description" content="在这篇文章中，我将分享我安装arch Linux的过程。">
-  <meta property="og:locale" content="en">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2025-09-18T00:00:00+00:00">
-    <meta property="article:modified_time" content="2025-09-18T00:00:00+00:00">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="archLinux安装过程">
-<meta name="twitter:description" content="在这篇文章中，我将分享我安装arch Linux的过程。">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "Posts",
-      "item": "https://windyJoy.github.io/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "archLinux安装过程",
-      "item": "https://windyJoy.github.io/posts/archlinux%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "archLinux安装过程",
-  "name": "archLinux安装过程",
-  "description": "在这篇文章中，我将分享我安装arch Linux的过程。\n",
-  "keywords": [
-    
-  ],
-  "articleBody": "在这篇文章中，我将分享我安装arch Linux的过程。\n前言 archlinux是一款轻量级且高度可定制的Linux发行版，适合那些希望深入了解Linux系统并根据个人需求进行配置的用户。它以简洁、灵活和滚动更新的特点著称，允许用户从最基本的系统开始，逐步添加所需的软件包和功能。\n在了解到archlinux后，让我这个对Linux系统感兴趣的小白产生了接触它的强烈意愿。于是乎在二手平台上花了688买了一个14年发行的电脑：ThinkPad E450。14英寸的屏幕，i7-5500U处理器，ADM-Radeon R7 M260显卡，8GB内存，256G硬盘。然后在这台老机子上开始了arch Linux的探索之旅。 安装arch Linux 安装前的准备 首先安装arclinux,是一定要去参考archlinux的官方安装指南的。通常在一台电脑上安装一个新系统要准备两样东西：\n一台能联网的电脑 一个U盘 在那台能联网的电脑上，下载archlinux的镜像文件，然后使用rufus等制作USB启动盘的软件，将镜像文件写入到U盘中，然后将U盘插入待装archlinux系统的电脑上开始安装过程。\n进入安装环境 将电脑重启，进入BIOS设置，将启动顺序设置为U盘启动，然后保存并退出BIOS设置。在电脑下次启动时，就会进入U盘中arch系统的终端界面。首先我们要连接网络，为后续下载软件包做准备。\n连接网络 首先，需要使用iwctl工具去连接到WiFi网络。具体步骤如下：\n在终端中输入iwctl命令进入iwctl工具。 然后输入device list命令查看系统中可用的网络设备。 输入station \u003c设备名\u003e scan命令扫描可用的WiFi网络。 输入station \u003c设备名\u003e get-networks命令查看扫描到的WiFi网络列表。 输入station \u003c设备名\u003e connect \u003c网络名\u003e命令连接到指定的WiFi网络。 在连接成功后，输入exit命令退出iwctl工具。使用ping工具检查一下网络连接是否成功： ping archlinux.org 如果能够成功ping通archlinux的官方网站，说明网络连接已经成功。\n更新系统时间 使用timedatectl工具确保系统时间是同步的。\n创建硬盘分区 内置硬盘、U盘或者移动硬盘等类型磁盘，将会被识别为/dev/下的设备文件。例如/dev/sda、/dev/sdb等。可以使用lsblk工具查看电脑上有几块磁盘。注意我们插进去的U盘也会被识别。通过磁盘的大小可以分辨出哪一个是电脑内置的256G硬盘，哪一个是刚插进去的启动盘。我电脑硬盘对应的设备文件名为/dev/sda。使用fdisk等分区工具修改/dev/sda的硬盘分区：\nfdisk /dev/sda 在fdisk交互界面中，使用m命令查看帮助信息。使用g命令创建一个新的GPT分区表。然后使用n命令创建新的分区。根据提示输入分区号、起始扇区和结束扇区等信息。\ng n Partition number (1-128, default 1):1 First sector (2048-500118191, default 2048): Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-500118191, default 500118191):+512M n Partition number (2-128, default 2):2 First sector (526336-500118191, default 526336): Last sector, +/-sectors or +/-size{K,M,G,T,P} (526336-500118191, default 500118191):+4GB n Partition number (2-128, default 2):3 First sector (4720640-500118191, default 4720640): Last sector, +/-sectors or +/-size{K,M,G,T,P} (4720640-500118191, default 500118191):500118191 以上创建了一个分区表，该分区表包含三个分区，第一块是512M的EFI系统分区，第二块是4G的交换空间分区，第三块是根目录分区。注意这个时候电脑的硬盘还没有被格式化，只是创建了一个分区表，就像装修房子一样，做好了设计图纸，还没有把这个设计图纸应用到房子上。可以使用p命令显示更改内容，q放弃更改，w命令将更改写入硬盘并退出程序。写入之后，需要为每个分区设置不同的文件系统，就像房子内需要划定每个房间是用来干什么的一样。\nmkfs.ext4 /dev/sda3 mkfs.fat -F 32 /dev/sda1 mkswap /dev/sda2 上述命令依次将sda的第三块分区格式化为ext4文件系统，第一块分区格式化为FAT32文件系统，第二块分区格式化为交换空间文件系统。\n挂载分区 挂载分区就是将硬盘上的分区和Linux系统的目录关联起来。首先将根目录分区挂载到/mnt目录下：\nmount /dev/sda3 /mnt 在挂载根目录分区后，在/mnt文件夹下创建boot文件夹，作为EFI系统分区的挂载点。然后将EFI系统分区挂载到/mnt/boot目录下：\nmkdir /mnt/boot mount /dev/sda1 /mnt/boot 使用swapon工具启用交换空间分区：\nswapon /dev/sda2 开始安装系统 系统的文件/etc/pacman.d/mirrorlist中定义了软件包会从哪个镜像站下载。该文件由reflector工具生成，reflector工具会根据当前网络环境自动选择最优的镜像站。由于在中国，所以需要重新配置一下reflector工具：\nreflector --country China --age 12 --protocl https --sort rate --save /etc/pacman.d/mirrorlist 配置好后，检查一下/etc/pacman.d/mirrorlist文件的内容，确认是否是中国的镜像站，例如清华源、阿里源等。再确定镜像站配置成功后，使用pacstrap脚本，将archlinux的基本系统以及需要的软件包安装到/mnt目录下：\npacstrap -K /mnt base base-devel linux linux-firmware intel-ucode vim networkmanager 配置系统 生成fstab文件 生成fstab文件以使需要的文件系统(如启动目录/boot)在启动时被自动挂载:\ngenfstab -U /mnt \u003e /mnt/etc/fstab 切换到新系统 在此刻之前，都是在U盘中的archlinux系统中，现在需要切换到刚刚安装的新系统的根目录下：\narch-chroot /mnt 设置时间和时区 通过以下命令设置系统的时区，例如设置为上海时间：\nln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime hwclock --systohc 区域和本地化设置 使用vim编辑器编辑/etc/locale.gen文件，取消掉en_US.UTF-8 UTF-8前的注释(#)，接着执行以下命令以生成 locale 信息：\nlocale-gen 然后创建/etc/locale.conf文件，写入以下内容以设置系统语言环境：\necho \"LANG=en_US.UTF-8\" \u003e /etc/locale.conf 网络配置 使用vim编辑器编辑/etc/hostname文件，写入系统的主机名，例如archlinux。\n设置root密码 使用passwd命令设置root用户的密码：\npasswd 安装引导加载程序 引导加载程序是用来启动操作系统的程序，在archlinux中，常用的引导加载程序有GRUB和systemd-boot。这里选择安装GRUB引导加载程序。\npacman -S grub efibootmgr grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB grub-mkconfig -o /boot/grub/grub.cfg 重新启动计算机 输入exit或按Ctrl+d退出chroot环境。执行以下命令卸载挂载的分区：\numount -R /mnt 最后通过执行reboot命令重新启动计算机，然后使用root账户登录到新系统。\narch安装的软件包 Arch Linux Installed Package 系统核心与基础 linux 内核，操作系统的核心 linuxfirmware 包含许多硬件设备所需的专有固有文件 base 系统所需的最小软件包集合 base-devel 编译软件所需的工具链 intel-ucode 用于修复CPU中的安全漏洞和错误 grub 最流行的引导加载程序之一 efibootmgr 管理UEFI固件启动条目的工具 pacman-contrib 包含对pacman有用的附加工具\n桌面环境与显示服务 hyprland 基于Wayland的高性能高度可定制的动态平铺窗口管理器 xdg-desktop-portal-hyprland 为 Hyprland 提供 XDG Desktop Portal 支持 hyprshot Hyprland 的专用屏幕截图工具，支持区域、窗口和全屏截图 hyprpaper Hypland官方的壁纸管理器 waybar 为窗口管理器设计的现代化、高度可定制的状态栏 dunst 轻量级、可定制的地下通知守护进程 wofi 为Wayland设计的应用程序启动器\n输入法 fcitx5 一个轻量灵活的输入法框架 fcitx-chinese-addons 为fcitx5提供中文输入支持 fcitx5-configtool fcitx5的图形化配置工具 fcitx5-gtk、fcitx5-qt 让fcitx5能够在基于GTK和Qt的应用程序中正常工作的兼容性模块 fcitx5-material-color 为fcitx5输入法面板提供不同主题\n应用程序 kityy 一个基于GPU加速的、高性能、功能丰富的终端模拟器 firefox 著名的开源网络浏览器 code 跨平台源代码编辑器 obs-studio OBS录屏和直播推流软件 spotify-adblock 音乐播放器 wechat 微信聊天软件 7zip 一个强大的开源文件压缩/解压缩工具 blueman BlueZ蓝牙堆栈的图形化管理工具（GTK前端） btop 监控系统占用资源的酷炫工具\n开发与工具 git 分布式版本控制系统的最主流实现 fd 一个简单、快速、用户友好的文件查找工具 vim 一个高度可配置的文本编辑器 fish 一个智能且用户友好的命令行shell paru/paru-debug 一个基于Rust的Arch User Repository助手\n字体 ttf-nerd-fonts-symbols 完整的图标支持 noto-fonts-cjk 确保中文、日文、韩文字符能正确、美观显示 ttf-jetbrain-mono 美观的显示英文字体和代码\n网络与音频 networkmanager 网络连接管理工具 pipewire-pulse 提供PulseAudio兼容服务器的PipeWire包 clash-verge-bin 用于管理和配置Clash代理\n其他工具 neofetch 一个在终端显示系统信息和 ASCII 艺术 Logo 的工具\n",
-  "wordCount" : "313",
-  "inLanguage": "en",
-  "datePublished": "2025-09-18T00:00:00Z",
-  "dateModified": "2025-09-18T00:00:00Z",
-  "author":{
-    "@type": "Person",
-    "name": "windyJoy"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://windyJoy.github.io/posts/archlinux%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "windyJoy",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://windyJoy.github.io/favicon.ico"
-    }
-  }
-}
-</script>
+</noscript>
 </head>
 
 <body class="" id="top">
@@ -139,7 +73,7 @@
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://windyJoy.github.io/" accesskey="h" title="windyJoy (Alt + H)">windyJoy</a>
+            <a href="http://localhost:1313/" accesskey="h" title="windyJoy (Alt + H)">windyJoy</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -423,7 +357,7 @@ clash-verge-bin 用于管理和配置Clash代理</p>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="https://windyJoy.github.io/">windyJoy</a></span> · 
+        <span>&copy; 2025 <a href="http://localhost:1313/">windyJoy</a></span> · 
 
     <span>
         Powered by
