@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>FFT是如何实现的 | windyJoy</title>
+<meta name="keywords" content="">
+<meta name="description" content="从理论上的FT到工程实践应用中的FFT,到底经历了什么呢？">
+<meta name="author" content="windyJoy">
+<link rel="canonical" href="https://windyJoy.github.io/posts/fft%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.a090830a421002426baafbd314e38f149d77b4c48a12ee9312700d770b27fb26.css" integrity="sha256-oJCDCkIQAkJrqvvTFOOPFJ13tMSKEu6TEnANdwsn&#43;yY=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://windyJoy.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://windyJoy.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://windyJoy.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://windyJoy.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://windyJoy.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://windyJoy.github.io/posts/fft%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false},
+        {left: '\\(', right: '\\)', display: false},
+        {left: '\\[', right: '\\]', display: true}
+      ],
+    });"></script>
+
+<meta property="og:url" content="https://windyJoy.github.io/posts/fft%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/">
+  <meta property="og:site_name" content="windyJoy">
+  <meta property="og:title" content="FFT是如何实现的">
+  <meta property="og:description" content="从理论上的FT到工程实践应用中的FFT,到底经历了什么呢？">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-10-16T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-10-16T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="FFT是如何实现的">
+<meta name="twitter:description" content="从理论上的FT到工程实践应用中的FFT,到底经历了什么呢？">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://windyJoy.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "FFT是如何实现的",
+      "item": "https://windyJoy.github.io/posts/fft%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "FFT是如何实现的",
+  "name": "FFT是如何实现的",
+  "description": "从理论上的FT到工程实践应用中的FFT,到底经历了什么呢？\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "从理论上的FT到工程实践应用中的FFT,到底经历了什么呢？\n连续时间信号 傅里叶级数 在信号与系统中，首先引入了傅里叶级数的概念，其表明任何周期函数，只要满足狄利克雷条件，都可以分解为一系列简单的正弦和余弦函数之和： $$ x(t) = \\frac{a_0}{2}+\\sum^{\\infty}_{n=1}[a_ncos(n\\omega_0t)+b_nsin(nw_0t)] $$ 其中，$\\omega_0=\\frac{2\\pi}{T}$是基波角频率，也是该周期信号的基本频率。$n$是正整数，$n=1,2,3…$，$\\frac{a_0}{2}$代表信号的直流分量，$a_n$和$b_n$被称为傅里叶系数，它们决定了每个频率分量的大小。这些系数可以通过对原信号在一个周期内进行积分得到： 直流分量： $$ a_0 = \\frac{2}{T}\\int_Tx(t)dt （计算信号的平均值） $$ 余弦项系数： $$ a_n = \\frac{2}{T}\\int_Tx(t)\\cdot cos(n\\omega_0t)dt $$ (计算原信号与频率为$n\\omega_0$的余弦波的“相似度”) 正弦项系数： $$ b_n = \\frac{2}{T}\\int_Tx(t)\\cdot sin(n\\omega_0t)dt $$ (计算原信号与频率为$n\\omega_0$的正弦波的“相似度”)\n傅里叶变换(FT) 傅里叶变换是傅里叶级数的推广。对于时域连续的周期信号可以使用傅里叶级数去分析，但是我们常见的信号都是时域连续的非周期信号，例如一个孤立的脉冲、一段语言。那对于时域连续的非周期信号该用什么数学工具去进行分析呢？\n对于一个周期信号，把它的周期取极限值，让它的周期趋向于无穷大，呈现的结果就是一个非周期信号： 当$T\\to \\infty$，基波频率$\\omega_0 = \\frac{2\\pi}{T}\\to0$，在傅里叶级数中，频谱是离散的，谱线出现在$n\\omega_0$处，谱线间隔为$\\omega_0$，当$\\omega_0 \\to 0$，离散谱线之间的间隔无限缩小，最终，离散的谱线会合并成一个连续的曲线。\n傅里叶变换的数学表达式为： $$ X(f) = \\int^{\\infty}_{-\\infty}x(t)e^{-j2\\pi ft}dt $$ 并且傅里叶变换通过引入冲击函数这个概念，成功将周期函数的傅里叶级数与周期函数的傅里叶变换统一了起来。\n离散时间信号 离散时间傅里叶变换(DTFT) 以上都是连续时间信号的处理，但是计算机(数字系统)只能处理离散的序列，而不能处理连续的时间信号，所以进一步引出了离散时间傅里叶变换。\n想要将连续信号送进计算机中处理，一定会经过模拟信号转数字信号的这个过程。这个过程包括抽样、量化等。抽样分为理想抽样和自然抽样，理想抽样假设抽样时间无限接近与0,自然抽样是有抽样时间的。\n在理想抽样中，周期抽样信号的时域表达式为： $$ \\sum^{\\infty}_{n=-\\infty}\\delta(t-nT_s) $$\n该信号的频域表达式为： $$ \\omega_s \\sum^{\\infty}_{n = -\\infty}\\delta(w-n\\omega_s) $$\n假设待抽样信号为$f(t)$，周期抽样信号为$p(t)$，二者通过乘法器实现抽样过程，抽样结果记为$f_s(t)$ $$ f_s(t) = f(t) \\cdot p(t) $$\n根据频域卷积定理，时域相乘，频域卷积，$f_s(t)$的频域表达式为： $$ F_s(\\omega) = \\frac{1}{2\\pi}F(\\omega)*P(\\omega) $$\n$$ F_s(\\omega) = \\frac{1}{2\\pi}F(\\omega)*\\omega_s \\sum^{\\infty}_{n=-\\infty}\\delta(w-n\\omega_s) $$\n$$ F_s(\\omega) = \\frac{\\omega_s}{2\\pi}\\sum^{\\infty}_{n=-\\infty}F(\\omega-n\\omega_s) $$\n$$ F_s(\\omega) = \\frac{1}{T_s} \\sum^{\\infty}_{n=-\\infty}F(\\omega-n\\omega_s) $$\n从表达式中可以看出，$f(t)$信号一旦经过抽样率为$T_s$的理想抽样，其频域就会以$\\omega_s$为周期进行周期延拓，幅度变为原来的$\\frac{1}{T_s}$。\n上述是理想情况下使用FT对于抽样的分析，但是实际工程中，不存在$\\delta(t)$这样的冲激函数。于是只能抛开物理上无法实现的冲激函数，关注那些采样点的数值。例如：\n$$ f(t)=cos\\Omega t \\ f(nT_s)=cos(\\Omega nT)=cos(\\omega n)=x(n) $$\n其中$f(t)$是模拟连续信号，$\\Omega$是模拟角频率，而$x(n)$是离散数字信号，$\\omega$是数字角频率。数字角频率是模拟角频率的采样值： $$ \\omega=\\Omega T_s $$\n那离散数字信号$f(n)$的频谱是什么呢？回到抽样后的冲激串信号$f_s(t)$: $$ f_s(t)=\\sum^{\\infty}_{n=-\\infty}f(nT_s)\\delta(t-nT_s) $$\n$$ f_s(t)=\\sum^{\\infty}_{-\\infty}x[n]\\delta(t-nT_s) $$\n对$f_s(t)$进行连续傅里叶变换：\n$$ F_s(\\Omega)=\\int^{\\infty}_{-\\infty}f_s(t)e^{-j\\Omega t}dt $$\n$$ F_s(\\Omega) = \\int_{-\\infty}^{\\infty} \\sum_{n=-\\infty}^{\\infty} x[n]\\delta(t-nT_s)e^{-j\\Omega t}dt $$\n交换求和与积分顺序： $$ F_s(\\Omega)= \\sum_{n=-\\infty}^{\\infty} x[n] \\int_{-\\infty}^{\\infty} \\delta(t-nT_s)e^{-j\\Omega t}dt $$\n根据冲激函数的抽样性： $$ F_s(\\Omega)= \\sum_{n=-\\infty}^{\\infty} x[n] \\int_{-\\infty}^{\\infty} \\delta(t-nT_s)e^{-j\\Omega nT_s}dt $$\n$$ F_s(\\Omega) = \\sum^{\\infty}_{n=-\\infty}x[n]e^{-j\\Omega(nT_s)} $$\n又由于$\\omega=\\Omega T_s$: $$ F_s(\\Omega)=\\sum^{\\infty}_{n=-\\infty}x[n]e^{-jn\\omega} $$\n而这就是离散时间傅里叶变换的表达式，记为$X(e^{j\\omega})$: $$ X(e^{j\\omega})= \\sum^{\\infty}_{n=-\\infty}x[n]e^{-jn\\omega} $$\n根据之前的推导： $$ F_s(\\Omega)=\\frac{1}{T_s}\\sum^{\\infty}_{n=-\\infty}F(\\Omega-n\\Omega_s) $$\n因此： $$ X(e^{j\\omega})=\\frac{1}{T_s}\\sum^{\\infty}_{n=-\\infty}F(\\frac{\\omega}{T_s}-n\\Omega_s) $$\n又由于$\\Omega_s=2\\pi f_s=\\frac{2\\pi}{T_s}$，所以： $$ X(e^{j\\omega})=\\frac{1}{T_s}\\sum^{\\infty}_{n=-\\infty}F(\\frac{\\omega-2\\pi n}{T_s}) $$\n从上面的表达式可以看出，连续模拟信号中的抽样会让模拟信号的频谱以模拟采样角频率$\\Omega_s$为周期进行延拓。而在离散数字信号的频谱则是以$2\\pi$为周期进行延拓。这就相当于将采样角频率归一化到了$(0,2\\pi)$。\n离散傅里叶变换(DFT) 通过上述的离散时间傅里叶变换，可以得到离散时间序列的频谱，该频谱的频率是数字角频率，而非模拟角频率。该频谱依然呈现周期性，只不过周期不再为$\\Omega_s$，而是归一化之后的$2\\pi$。但是计算机只能处理离散信号，现在你输入的是离散的时间序列，输入符合要求了。但是离散时间序列的频谱依然是连续的，在计算机上无法得到其频谱，于是只能对连续频谱也进行离散化，从而引入离散傅里叶变换。\n假设有一个有限长的信号$x[n]$，其长度为$N(n=0,1,…,N-1)$。该信号的DTFT为： $$ X(e^{j\\omega})=\\sum^{N-1}_{n=0}x[n]e^{-j\\omega n} $$ 这是一个连续的、以$2\\pi$为周期的函数。\n为了让频域离散化，对频域进行采样，在DTFT的一个完整周期$[0,2\\pi)$上，等间隔地取$N$个点。这些点的数字频率为： $$ \\omega_k=\\frac{2\\pi k}{N}, k=0,1,…,N-1 $$ 计算DTFT在这些点上的值： $$ X(e^{j\\omega_k})=X(e^{j\\frac{2\\pi k}{N}})=\\sum^{N-1}_{n=0}x[n]e^{-j\\frac{2\\pi k}{N}n} $$\n等式最右边的式子就是离散傅里叶变换： $$ X[k]=\\sum_{n=0}^{N-1} x[n]e^{-j\\frac{2\\pi}{N}kn}, k=0,1,…,N-1 $$\n通过将频谱离散化的方式，将输入结果与输出结果都离散化处理，从而让计算机能够进行处理。为了简化表达式，令$W_N=e^{-j\\frac{2\\pi}{N}}$，并命名其为旋转因子。原来的表达式就转化为： $$ X[k]=\\sum_{n=0}^{N-1} x[n]W^{kn}_{N}, k=0,1,…,N-1 $$\n$W_N$可以通过欧拉公式转换为复数： $$ W_N=e^{-j\\frac{2\\pi}{N}}=cos(-\\frac{2\\pi}{N})+jsin(-\\frac{2\\pi}{N}) $$\n旋转因子具有两个特性可以方便计算：\n1.周期性：$W_{N}^{k+N}=W^k_N$\n2.对称性：$W^{k+N/2}_{N}=-W^k_N$\n计算一个$X[k]$需要$N$次复数乘法和$N-1$次复数加法，计算所有N个$X[k]$需要$N\\times N$次复数乘法加上$N \\times (N-1)$次复数加法。当$N$很大时，计算量将变得极其惊人，当$N=1024$，计算量超过百万次，DFT的计算复杂度为$O(N^2)$\n另外DFT也有一定的局限性。最著名的就是栅栏效应：由于DFT只看到了DTFT的N个采样点，就像通过一个栅栏看连续的频谱，只能看到一部分景象。增加DFT的长度$N$(例如对原信号补零),就相当于使用刻度更密的尺子，可以更清晰地看到 DTFT 的细节，但并不会改变 DTFT 曲线本身（因为补零没有增加新的信号信息）。\n快速傅里叶变换(FFT) 为了优化DFT的计算量大的问题，FFT算法氤氲而生。FFT不是一种新的变换，而是一种用于高效计算DFT的算法，它极大程度的降低了DFT的计算复杂度，是数字信号处理领域的一场革命，使得许多实时信号处理应用成为可能。最著名的FFT算法是库利-图基算法，它要求$N$是2的整数次幂。这种FFT也被称为基2-FFT。\n该算法将一个$N$点的DFT分解为两个$N/2$点的DFT。将原始序列$x[n]$按奇偶索引拆分成两个子序列：\n$$ X[k] = \\sum_{n=0}^{N-1} x[n] W_N^{kn} = \\sum_{n \\text{ even}} x[n] W_N^{kn} + \\sum_{n \\text{ odd}} x[n] W_N^{kn} $$\n对于偶序列，令$n=2r (r=0,1,…,N/2-1)$:\n$$ \\sum_{r=0}^{N/2-1} x[2r] W_N^{k(2r)} = \\sum_{r=0}^{N/2-1} x[2r] (W_N^2)^{kr} $$\n由于$W^2_N=e^{-j\\frac{2\\pi}{N}\\cdot 2}=e^{-j\\frac{2\\pi}{N/2}}=W_{N/2}$。所以上式等于： $$ \\sum_{r=0}^{N/2-1}x[2r]W^{kr}_{N/2} $$\n这个就是偶序列的$N/2$点DFT,记作$G[k]$。\n对于奇序列，令$n=2r+1$: $$ \\sum_{r=0}^{N/2-1} x[2r+1] W_N^{k(2r+1)} = W_N^k \\sum_{r=0}^{N/2-1} x[2r+1] (W_N^2)^{kr} $$\n记$ \\sum_{r=0}^{N/2-1} x[2r+1] (W^2_N)^{kr}$为$H[k]$,即奇序列的$N/2$点DFT。那么一个$N$点DFT $X[k]$可以通过组合两个$N/2$点DFT($G[k]$和$H[k]$)的结果来得到。这个组合步骤被称为“蝶形运算”: $$ X[k]=G[k]+W^k_NH[k] $$\n对于一个16点的FFT，其分解过程就像一个完整的树状结构：\n第一层分解（问题规模：16）\n将原始的16点序列$x[n]$按奇偶索引拆分成两个8点的子序列:\n偶序列：$g_1[m] = [x_0, x_2, x_4, …, x_{14}]$(包含8个点)\n奇序列：$h_1[m] = [x_1, x_3, x_5, …, x_{15}]$(包含8个点)\n目标：利用两个8点DFT的结果$G_1[k]$和$H_1[k]$来构建最终的16点DFT $X[k]$。\n第二层分解（问题规模：8） 将每一个8点的子序列$g_1[m]$和$h_1[m]$再按奇偶索引拆分成两个4点的子序列。\n从$g_1[m]$得到：\n$g_2[m] = [x_0, x_4, x_8, x_{12}]$(偶偶序列，4个点)\n$h_2[m] = [x_2, x_6, x_{10}, x_{14}]$(偶奇序列，4个点)\n从$h_1[m]$得到：\n$g_3[m] = [x_1, x_5, x_9, x_{13}]$(奇偶序列，4个点)\n$h_3[m] = [x_3, x_7, x_{11}, x_{15}]$(奇奇序列，4个点)\n现在有 4个4点的序列需要处理。\n第三层分解（问题规模：4）\n将每一个4点的子序列$g_2[m], h_2[m], g_3[m], h_3[m]$再按奇偶索引拆分成两个2点的子序列。\n例如，从$g_2[m] = [x_0, x_4, x_8, x_{12}]$得到：\n$g_4[m] = [x_0, x_8]$(偶偶偶序列，2个点)\n$h_4[m] = [x_4, x_{12}]$(偶偶奇序列，2个点)\n以此类推，我们最终会得到8个2点的序列。\n最底层（问题规模：2） 计算每一个2点序列的DFT。2点DFT极其简单，就是一个简单的蝶形运算，无需任何乘法(因为$W^1_2=-1$，乘法只是取反)。\n例如，对于$g_4[m] = [x_0, x_8]$：\n$G_4[0] = x_0 + x_8$\n$G_4[1] = x_0 - x_8$\n重构（合成）过程:\n分解完成后，我们再自底向上地合并：\n第一级合并：利用8个2点DFT的结果，通过蝶形运算组合成4个4点DFT。\n第二级合并：利用4个4点DFT的结果，通过蝶形运算组合成2个8点DFT。\n第三级合并：利用2个8点DFT的结果，通过蝶形运算组合成1个最终的16点DFT。\n这个过程的层级结构非常清晰：\n16点DFT (X[k]) / \\ 8点DFT 8点DFT / \\ / \\ 4点DFT 4点DFT 4点DFT 4点DFT / \\ / \\ / \\ / \\ 2点 2点 ................. 如果直接计算16点DFT需要$N^2=256$次复数乘法，而FFT仅需要$(N/2)\\times log_2N=32$次复数乘法。直接从$O(N^2)$算法提升到了$O(NlogN)$算法\n",
+  "wordCount" : "403",
+  "inLanguage": "en",
+  "datePublished": "2025-10-16T00:00:00Z",
+  "dateModified": "2025-10-16T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "windyJoy"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://windyJoy.github.io/posts/fft%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "windyJoy",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://windyJoy.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://windyJoy.github.io/" accesskey="h" title="windyJoy (Alt + H)">windyJoy</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      FFT是如何实现的
+    </h1>
+    <div class="post-meta"><span title='2025-10-16 00:00:00 +0000 UTC'>October 16, 2025</span>&nbsp;·&nbsp;<span>windyJoy</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e8%bf%9e%e7%bb%ad%e6%97%b6%e9%97%b4%e4%bf%a1%e5%8f%b7" aria-label="连续时间信号">连续时间信号</a><ul>
+                        
+                <li>
+                    <a href="#%e5%82%85%e9%87%8c%e5%8f%b6%e7%ba%a7%e6%95%b0" aria-label="傅里叶级数">傅里叶级数</a></li>
+                <li>
+                    <a href="#%e5%82%85%e9%87%8c%e5%8f%b6%e5%8f%98%e6%8d%a2ft" aria-label="傅里叶变换(FT)">傅里叶变换(FT)</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%a6%bb%e6%95%a3%e6%97%b6%e9%97%b4%e4%bf%a1%e5%8f%b7" aria-label="离散时间信号">离散时间信号</a><ul>
+                        
+                <li>
+                    <a href="#%e7%a6%bb%e6%95%a3%e6%97%b6%e9%97%b4%e5%82%85%e9%87%8c%e5%8f%b6%e5%8f%98%e6%8d%a2dtft" aria-label="离散时间傅里叶变换(DTFT)">离散时间傅里叶变换(DTFT)</a></li>
+                <li>
+                    <a href="#%e7%a6%bb%e6%95%a3%e5%82%85%e9%87%8c%e5%8f%b6%e5%8f%98%e6%8d%a2dft" aria-label="离散傅里叶变换(DFT)">离散傅里叶变换(DFT)</a></li>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e5%82%85%e9%87%8c%e5%8f%b6%e5%8f%98%e6%8d%a2fft" aria-label="快速傅里叶变换(FFT)">快速傅里叶变换(FFT)</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>从理论上的FT到工程实践应用中的FFT,到底经历了什么呢？</p>
+<h1 id="连续时间信号">连续时间信号<a hidden class="anchor" aria-hidden="true" href="#连续时间信号">#</a></h1>
+<h2 id="傅里叶级数">傅里叶级数<a hidden class="anchor" aria-hidden="true" href="#傅里叶级数">#</a></h2>
+<p>在信号与系统中，首先引入了傅里叶级数的概念，其表明任何周期函数，只要满足狄利克雷条件，都可以分解为一系列简单的正弦和余弦函数之和：
+$$
+x(t) = \frac{a_0}{2}+\sum^{\infty}_{n=1}[a_ncos(n\omega_0t)+b_nsin(nw_0t)]
+$$
+其中，$\omega_0=\frac{2\pi}{T}$是基波角频率，也是该周期信号的基本频率。$n$是正整数，$n=1,2,3&hellip;$，$\frac{a_0}{2}$代表信号的直流分量，$a_n$和$b_n$被称为傅里叶系数，它们决定了每个频率分量的大小。这些系数可以通过对原信号在一个周期内进行积分得到：
+直流分量：
+$$
+a_0 = \frac{2}{T}\int_Tx(t)dt
+（计算信号的平均值）
+$$
+余弦项系数：
+$$
+a_n = \frac{2}{T}\int_Tx(t)\cdot cos(n\omega_0t)dt
+$$
+(计算原信号与频率为$n\omega_0$的余弦波的“相似度”)
+正弦项系数：
+$$
+b_n = \frac{2}{T}\int_Tx(t)\cdot sin(n\omega_0t)dt
+$$
+(计算原信号与频率为$n\omega_0$的正弦波的“相似度”)</p>
+<h2 id="傅里叶变换ft">傅里叶变换(FT)<a hidden class="anchor" aria-hidden="true" href="#傅里叶变换ft">#</a></h2>
+<p>傅里叶变换是傅里叶级数的推广。对于时域连续的周期信号可以使用傅里叶级数去分析，但是我们常见的信号都是时域连续的非周期信号，例如一个孤立的脉冲、一段语言。那对于时域连续的非周期信号该用什么数学工具去进行分析呢？</p>
+<p>对于一个周期信号，把它的周期取极限值，让它的周期趋向于无穷大，呈现的结果就是一个非周期信号：
+<figure>
+    <img loading="lazy" src="%e5%91%a8%e6%9c%9f%e4%bf%a1%e5%8f%b7%e5%8f%98%e9%9d%9e%e5%91%a8%e6%9c%9f.png" width="500"/> 
+</figure>
+
+当$T\to \infty$，基波频率$\omega_0 = \frac{2\pi}{T}\to0$，在傅里叶级数中，频谱是离散的，谱线出现在$n\omega_0$处，谱线间隔为$\omega_0$，当$\omega_0 \to 0$，离散谱线之间的间隔无限缩小，最终，离散的谱线会合并成一个连续的曲线。</p>
+<p>傅里叶变换的数学表达式为：
+$$
+X(f) = \int^{\infty}_{-\infty}x(t)e^{-j2\pi ft}dt
+$$
+并且傅里叶变换通过引入冲击函数这个概念，成功将周期函数的傅里叶级数与周期函数的傅里叶变换统一了起来。</p>
+<h1 id="离散时间信号">离散时间信号<a hidden class="anchor" aria-hidden="true" href="#离散时间信号">#</a></h1>
+<h2 id="离散时间傅里叶变换dtft">离散时间傅里叶变换(DTFT)<a hidden class="anchor" aria-hidden="true" href="#离散时间傅里叶变换dtft">#</a></h2>
+<p>以上都是连续时间信号的处理，但是计算机(数字系统)只能处理离散的序列，而不能处理连续的时间信号，所以进一步引出了离散时间傅里叶变换。</p>
+<p>想要将连续信号送进计算机中处理，一定会经过模拟信号转数字信号的这个过程。这个过程包括抽样、量化等。抽样分为理想抽样和自然抽样，理想抽样假设抽样时间无限接近与0,自然抽样是有抽样时间的。</p>
+<p>在理想抽样中，周期抽样信号的时域表达式为：
+$$
+\sum^{\infty}_{n=-\infty}\delta(t-nT_s)
+$$</p>
+<p>该信号的频域表达式为：
+$$
+\omega_s \sum^{\infty}_{n = -\infty}\delta(w-n\omega_s)
+$$</p>
+<p>假设待抽样信号为$f(t)$，周期抽样信号为$p(t)$，二者通过乘法器实现抽样过程，抽样结果记为$f_s(t)$
+$$
+f_s(t) = f(t) \cdot p(t)
+$$</p>
+<p>根据频域卷积定理，时域相乘，频域卷积，$f_s(t)$的频域表达式为：
+$$
+F_s(\omega) = \frac{1}{2\pi}F(\omega)*P(\omega)
+$$</p>
+<p>$$
+F_s(\omega) = \frac{1}{2\pi}F(\omega)*\omega_s \sum^{\infty}_{n=-\infty}\delta(w-n\omega_s)
+$$</p>
+<p>$$
+F_s(\omega) = \frac{\omega_s}{2\pi}\sum^{\infty}_{n=-\infty}F(\omega-n\omega_s)
+$$</p>
+<p>$$
+F_s(\omega) = \frac{1}{T_s} \sum^{\infty}_{n=-\infty}F(\omega-n\omega_s)
+$$</p>
+<p>从表达式中可以看出，$f(t)$信号一旦经过抽样率为$T_s$的理想抽样，其频域就会以$\omega_s$为周期进行周期延拓，幅度变为原来的$\frac{1}{T_s}$。</p>
+<p>上述是理想情况下使用FT对于抽样的分析，但是实际工程中，不存在$\delta(t)$这样的冲激函数。于是只能抛开物理上无法实现的冲激函数，关注那些采样点的数值。例如：</p>
+<p>$$
+f(t)=cos\Omega t    \
+f(nT_s)=cos(\Omega nT)=cos(\omega n)=x(n)
+$$</p>
+<p>其中$f(t)$是模拟连续信号，$\Omega$是模拟角频率，而$x(n)$是离散数字信号，$\omega$是数字角频率。数字角频率是模拟角频率的采样值：
+$$
+\omega=\Omega T_s
+$$</p>
+<p>那离散数字信号$f(n)$的频谱是什么呢？回到抽样后的冲激串信号$f_s(t)$:
+$$
+f_s(t)=\sum^{\infty}_{n=-\infty}f(nT_s)\delta(t-nT_s)
+$$</p>
+<p>$$
+f_s(t)=\sum^{\infty}_{-\infty}x[n]\delta(t-nT_s)
+$$</p>
+<p>对$f_s(t)$进行连续傅里叶变换：</p>
+<p>$$
+F_s(\Omega)=\int^{\infty}_{-\infty}f_s(t)e^{-j\Omega t}dt
+$$</p>
+<p>$$
+F_s(\Omega) = \int_{-\infty}^{\infty} \sum_{n=-\infty}^{\infty} x[n]\delta(t-nT_s)e^{-j\Omega t}dt
+$$</p>
+<p>交换求和与积分顺序：
+$$
+F_s(\Omega)= \sum_{n=-\infty}^{\infty} x[n] \int_{-\infty}^{\infty} \delta(t-nT_s)e^{-j\Omega t}dt
+$$</p>
+<p>根据冲激函数的抽样性：
+$$
+F_s(\Omega)= \sum_{n=-\infty}^{\infty} x[n] \int_{-\infty}^{\infty} \delta(t-nT_s)e^{-j\Omega nT_s}dt
+$$</p>
+<p>$$
+F_s(\Omega) = \sum^{\infty}_{n=-\infty}x[n]e^{-j\Omega(nT_s)}
+$$</p>
+<p>又由于$\omega=\Omega T_s$:
+$$
+F_s(\Omega)=\sum^{\infty}_{n=-\infty}x[n]e^{-jn\omega}
+$$</p>
+<p>而这就是离散时间傅里叶变换的表达式，记为$X(e^{j\omega})$:
+$$
+X(e^{j\omega})= \sum^{\infty}_{n=-\infty}x[n]e^{-jn\omega}
+$$</p>
+<p>根据之前的推导：
+$$
+F_s(\Omega)=\frac{1}{T_s}\sum^{\infty}_{n=-\infty}F(\Omega-n\Omega_s)
+$$</p>
+<p>因此：
+$$
+X(e^{j\omega})=\frac{1}{T_s}\sum^{\infty}_{n=-\infty}F(\frac{\omega}{T_s}-n\Omega_s)
+$$</p>
+<p>又由于$\Omega_s=2\pi f_s=\frac{2\pi}{T_s}$，所以：
+$$
+X(e^{j\omega})=\frac{1}{T_s}\sum^{\infty}_{n=-\infty}F(\frac{\omega-2\pi n}{T_s})
+$$</p>
+<p>从上面的表达式可以看出，连续模拟信号中的抽样会让模拟信号的频谱以模拟采样角频率$\Omega_s$为周期进行延拓。而在离散数字信号的频谱则是以$2\pi$为周期进行延拓。这就相当于将采样角频率归一化到了$(0,2\pi)$。</p>
+<h2 id="离散傅里叶变换dft">离散傅里叶变换(DFT)<a hidden class="anchor" aria-hidden="true" href="#离散傅里叶变换dft">#</a></h2>
+<p>通过上述的离散时间傅里叶变换，可以得到离散时间序列的频谱，该频谱的频率是数字角频率，而非模拟角频率。该频谱依然呈现周期性，只不过周期不再为$\Omega_s$，而是归一化之后的$2\pi$。但是计算机只能处理离散信号，现在你输入的是离散的时间序列，输入符合要求了。但是离散时间序列的频谱依然是连续的，在计算机上无法得到其频谱，于是只能对连续频谱也进行离散化，从而引入离散傅里叶变换。</p>
+<p>假设有一个有限长的信号$x[n]$，其长度为$N(n=0,1,&hellip;,N-1)$。该信号的DTFT为：
+$$
+X(e^{j\omega})=\sum^{N-1}_{n=0}x[n]e^{-j\omega n}
+$$
+这是一个连续的、以$2\pi$为周期的函数。</p>
+<p>为了让频域离散化，对频域进行采样，在DTFT的一个完整周期$[0,2\pi)$上，等间隔地取$N$个点。这些点的数字频率为：
+$$
+\omega_k=\frac{2\pi k}{N}, k=0,1,&hellip;,N-1
+$$
+计算DTFT在这些点上的值：
+$$
+X(e^{j\omega_k})=X(e^{j\frac{2\pi k}{N}})=\sum^{N-1}_{n=0}x[n]e^{-j\frac{2\pi k}{N}n}
+$$</p>
+<p>等式最右边的式子就是离散傅里叶变换：
+$$
+X[k]=\sum_{n=0}^{N-1} x[n]e^{-j\frac{2\pi}{N}kn}, k=0,1,&hellip;,N-1
+$$</p>
+<p>通过将频谱离散化的方式，将输入结果与输出结果都离散化处理，从而让计算机能够进行处理。为了简化表达式，令$W_N=e^{-j\frac{2\pi}{N}}$，并命名其为旋转因子。原来的表达式就转化为：
+$$
+X[k]=\sum_{n=0}^{N-1} x[n]W^{kn}_{N}, k=0,1,&hellip;,N-1
+$$</p>
+<p>$W_N$可以通过欧拉公式转换为复数：
+$$
+W_N=e^{-j\frac{2\pi}{N}}=cos(-\frac{2\pi}{N})+jsin(-\frac{2\pi}{N})
+$$</p>
+<p>旋转因子具有两个特性可以方便计算：</p>
+<p>1.周期性：$W_{N}^{k+N}=W^k_N$</p>
+<p>2.对称性：$W^{k+N/2}_{N}=-W^k_N$</p>
+<p>计算一个$X[k]$需要$N$次复数乘法和$N-1$次复数加法，计算所有N个$X[k]$需要$N\times N$次复数乘法加上$N \times (N-1)$次复数加法。当$N$很大时，计算量将变得极其惊人，当$N=1024$，计算量超过百万次，DFT的计算复杂度为$O(N^2)$</p>
+<p>另外DFT也有一定的局限性。最著名的就是栅栏效应：由于DFT只看到了DTFT的N个采样点，就像通过一个栅栏看连续的频谱，只能看到一部分景象。增加DFT的长度$N$(例如对原信号补零),就相当于使用刻度更密的尺子，可以更清晰地看到 DTFT 的细节，但并不会改变 DTFT 曲线本身（因为补零没有增加新的信号信息）。</p>
+<h2 id="快速傅里叶变换fft">快速傅里叶变换(FFT)<a hidden class="anchor" aria-hidden="true" href="#快速傅里叶变换fft">#</a></h2>
+<p>为了优化DFT的计算量大的问题，FFT算法氤氲而生。FFT不是一种新的变换，而是一种用于高效计算DFT的算法，它极大程度的降低了DFT的计算复杂度，是数字信号处理领域的一场革命，使得许多实时信号处理应用成为可能。最著名的FFT算法是库利-图基算法，它要求$N$是2的整数次幂。这种FFT也被称为基2-FFT。</p>
+<p>该算法将一个$N$点的DFT分解为两个$N/2$点的DFT。将原始序列$x[n]$按奇偶索引拆分成两个子序列：</p>
+<p>$$
+X[k] = \sum_{n=0}^{N-1} x[n] W_N^{kn}
+= \sum_{n \text{ even}} x[n] W_N^{kn} + \sum_{n \text{ odd}} x[n] W_N^{kn}
+$$</p>
+<p>对于偶序列，令$n=2r (r=0,1,&hellip;,N/2-1)$:</p>
+<p>$$
+\sum_{r=0}^{N/2-1} x[2r] W_N^{k(2r)}
+= \sum_{r=0}^{N/2-1} x[2r] (W_N^2)^{kr}
+$$</p>
+<p>由于$W^2_N=e^{-j\frac{2\pi}{N}\cdot 2}=e^{-j\frac{2\pi}{N/2}}=W_{N/2}$。所以上式等于：
+$$
+\sum_{r=0}^{N/2-1}x[2r]W^{kr}_{N/2}
+$$</p>
+<p>这个就是偶序列的$N/2$点DFT,记作$G[k]$。</p>
+<p>对于奇序列，令$n=2r+1$:
+$$
+\sum_{r=0}^{N/2-1} x[2r+1] W_N^{k(2r+1)}
+= W_N^k \sum_{r=0}^{N/2-1} x[2r+1] (W_N^2)^{kr}
+$$</p>
+<p>记$ \sum_{r=0}^{N/2-1} x[2r+1] (W^2_N)^{kr}$为$H[k]$,即奇序列的$N/2$点DFT。那么一个$N$点DFT $X[k]$可以通过组合两个$N/2$点DFT($G[k]$和$H[k]$)的结果来得到。这个组合步骤被称为“蝶形运算”:
+$$
+X[k]=G[k]+W^k_NH[k]
+$$</p>
+<p>对于一个16点的FFT，其分解过程就像一个完整的树状结构：</p>
+<p>第一层分解（问题规模：16）</p>
+<p>将原始的16点序列$x[n]$按奇偶索引拆分成两个8点的子序列:</p>
+<p>偶序列：$g_1[m] = [x_0, x_2, x_4, &hellip;, x_{14}]$(包含8个点)</p>
+<p>奇序列：$h_1[m] = [x_1, x_3, x_5, &hellip;, x_{15}]$(包含8个点)</p>
+<p>目标：利用两个8点DFT的结果$G_1[k]$和$H_1[k]$来构建最终的16点DFT $X[k]$。</p>
+<p>第二层分解（问题规模：8）
+将每一个8点的子序列$g_1[m]$和$h_1[m]$再按奇偶索引拆分成两个4点的子序列。</p>
+<p>从$g_1[m]$得到：</p>
+<p>$g_2[m] = [x_0, x_4, x_8, x_{12}]$(偶偶序列，4个点)</p>
+<p>$h_2[m] = [x_2, x_6, x_{10}, x_{14}]$(偶奇序列，4个点)</p>
+<p>从$h_1[m]$得到：</p>
+<p>$g_3[m] = [x_1, x_5, x_9, x_{13}]$(奇偶序列，4个点)</p>
+<p>$h_3[m] = [x_3, x_7, x_{11}, x_{15}]$(奇奇序列，4个点)</p>
+<p>现在有 4个4点的序列需要处理。</p>
+<p>第三层分解（问题规模：4）</p>
+<p>将每一个4点的子序列$g_2[m], h_2[m], g_3[m], h_3[m]$再按奇偶索引拆分成两个2点的子序列。</p>
+<p>例如，从$g_2[m] = [x_0, x_4, x_8, x_{12}]$得到：</p>
+<p>$g_4[m] = [x_0, x_8]$(偶偶偶序列，2个点)</p>
+<p>$h_4[m] = [x_4, x_{12}]$(偶偶奇序列，2个点)</p>
+<p>以此类推，我们最终会得到8个2点的序列。</p>
+<p>最底层（问题规模：2）
+计算每一个2点序列的DFT。2点DFT极其简单，就是一个简单的蝶形运算，无需任何乘法(因为$W^1_2=-1$，乘法只是取反)。</p>
+<p>例如，对于$g_4[m] = [x_0, x_8]$：</p>
+<p>$G_4[0] = x_0 + x_8$</p>
+<p>$G_4[1] = x_0 - x_8$</p>
+<p>重构（合成）过程:</p>
+<p>分解完成后，我们再自底向上地合并：</p>
+<ol>
+<li>
+<p>第一级合并：利用8个2点DFT的结果，通过蝶形运算组合成4个4点DFT。</p>
+</li>
+<li>
+<p>第二级合并：利用4个4点DFT的结果，通过蝶形运算组合成2个8点DFT。</p>
+</li>
+<li>
+<p>第三级合并：利用2个8点DFT的结果，通过蝶形运算组合成1个最终的16点DFT。</p>
+</li>
+</ol>
+<p>这个过程的层级结构非常清晰：</p>
+<pre tabindex="0"><code>16点DFT (X[k])
+       /       \
+    8点DFT    8点DFT
+    /   \     /   \
+  4点DFT 4点DFT 4点DFT 4点DFT
+  / \   / \   / \   / \
+2点 2点 .................
+</code></pre><p>如果直接计算16点DFT需要$N^2=256$次复数乘法，而FFT仅需要$(N/2)\times log_2N=32$次复数乘法。直接从$O(N^2)$算法提升到了$O(NlogN)$算法</p>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://windyJoy.github.io/">windyJoy</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

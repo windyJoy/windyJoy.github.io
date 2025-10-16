@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Math on windyJoy</title>
+    <link>http://localhost:40097/tags/math/</link>
+    <description>Recent content in Math on windyJoy</description>
+    <generator>Hugo -- 0.151.0</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 16 Oct 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:40097/tags/math/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>数学公式测试</title>
+      <link>http://localhost:40097/posts/latex-test/</link>
+      <pubDate>Thu, 16 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:40097/posts/latex-test/</guid>
+      <description>&lt;p&gt;本文用于测试 &lt;strong&gt;KaTeX / MathJax&lt;/strong&gt; 在 PaperMod 主题下的渲染效果。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;$$
+\begin{aligned}
+F_s(\omega) &amp;amp;= \frac{1}{2\pi}F(\omega)&lt;em&gt;P(\omega) \
+&amp;amp;= \frac{1}{2\pi}F(\omega)&lt;/em&gt;\omega_s \sum^{\infty}&lt;em&gt;{n = -\infty}\delta(w-n\omega_s) \
+&amp;amp;= \frac{\omega_s}{2\pi}\sum^{\infty}&lt;/em&gt;{n=-\infty}F(\omega-n\omega_s) \
+&amp;amp;= \frac{1}{T_s} \sum^{\infty}_{n=-\infty}F(\omega-n\omega_s)
+\end{aligned}
+$$&lt;/p&gt;
+&lt;h2 id=&#34;一行内与块级公式&#34;&gt;一、行内与块级公式&lt;/h2&gt;
+&lt;p&gt;行内公式示例：&lt;br&gt;
+这是爱因斯坦的质能方程 $E = mc^2$。&lt;/p&gt;
+&lt;p&gt;块级公式示例：&lt;br&gt;
+$$
+a^2 + b^2 = c^2
+$$&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;二分数与根号&#34;&gt;二、分数与根号&lt;/h2&gt;
+&lt;p&gt;行内：$\frac{a}{b}$, $\sqrt{x^2 + y^2}$。&lt;/p&gt;
+&lt;p&gt;块级：
+$$
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+$$&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;三积分与微分&#34;&gt;三、积分与微分&lt;/h2&gt;
+&lt;p&gt;行内：$\int_0^\infty e^{-x} , dx = 1$&lt;/p&gt;
+&lt;p&gt;块级：
+$$
+\frac{d}{dx} \sin x = \cos x
+$$&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

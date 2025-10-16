@@ -1,26 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head>
-	<meta name="generator" content="Hugo 0.151.0"><meta charset="utf-8">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=40097&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
-<title>windyJoy</title>
-
+<meta name="robots" content="noindex, nofollow">
+<title>KaTeX | windyJoy</title>
+<meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="https://windyJoy.github.io/">
+<link rel="canonical" href="http://localhost:40097/tags/katex/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.a090830a421002426baafbd314e38f149d77b4c48a12ee9312700d770b27fb26.css" integrity="sha256-oJCDCkIQAkJrqvvTFOOPFJ13tMSKEu6TEnANdwsn&#43;yY=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://windyJoy.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://windyJoy.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://windyJoy.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://windyJoy.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://windyJoy.github.io/safari-pinned-tab.svg">
+<link rel="icon" href="http://localhost:40097/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:40097/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:40097/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:40097/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:40097/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://windyJoy.github.io/index.xml" title="rss">
-<link rel="alternate" hreflang="en" href="https://windyJoy.github.io/">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:40097/tags/katex/index.xml" title="rss">
+<link rel="alternate" hreflang="en" href="http://localhost:40097/tags/katex/">
 <noscript>
     <style>
         #theme-toggle,
@@ -70,31 +69,10 @@
         {left: '$', right: '$', display: false},
         {left: '\\(', right: '\\)', display: false},
         {left: '\\[', right: '\\]', display: true}
-      ],
+      ]
     });"></script>
 
-<meta property="og:url" content="https://windyJoy.github.io/">
-  <meta property="og:site_name" content="windyJoy">
-  <meta property="og:title" content="windyJoy">
-  <meta property="og:locale" content="en">
-  <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="windyJoy">
-<meta name="twitter:description" content="">
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "windyJoy",
-  "url": "https://windyJoy.github.io/",
-  "description": "",
-  "logo": "https://windyJoy.github.io/favicon.ico",
-  "sameAs": [
-      
-  ]
-}
-</script>
 </head>
 
 <body class="list" id="top">
@@ -112,7 +90,7 @@
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://windyJoy.github.io/" accesskey="h" title="windyJoy (Alt + H)">windyJoy</a>
+            <a href="http://localhost:40097/" accesskey="h" title="windyJoy (Alt + H)">windyJoy</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -141,88 +119,37 @@
     </nav>
 </header>
 <main class="main"> 
-<article class="first-entry home-info">
-    <header class="entry-header">
-        <h1>windyJoy&rsquo;s Blog</h1>
-    </header>
-    <div class="entry-content">
-        分享技术、生活和思考
-    </div>
-    <footer class="entry-footer">
-        <div class="social-icons" >
-</div>
+<header class="page-header">
+  <h1>
+    KaTeX
+  </h1>
+</header>
 
-    </footer>
-</article>
-
-<article class="post-entry"> 
+<article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">FFT是如何实现的
+    <h2 class="entry-hint-parent">数学公式测试
     </h2>
   </header>
   <div class="entry-content">
-    <p>从理论上的FT到工程实践应用中的FFT,到底经历了什么呢？
+    <p>本文用于测试 KaTeX / MathJax 在 PaperMod 主题下的渲染效果。
+$$ \begin{aligned} F_s(\omega) &amp;= \frac{1}{2\pi}F(\omega)P(\omega) \ &amp;= \frac{1}{2\pi}F(\omega)\omega_s \sum^{\infty}{n = -\infty}\delta(w-n\omega_s) \ &amp;= \frac{\omega_s}{2\pi}\sum^{\infty}{n=-\infty}F(\omega-n\omega_s) \ &amp;= \frac{1}{T_s} \sum^{\infty}_{n=-\infty}F(\omega-n\omega_s) \end{aligned} $$
+一、行内与块级公式 行内公式示例：
+这是爱因斯坦的质能方程 $E = mc^2$。
+块级公式示例：
+$$ a^2 &#43; b^2 = c^2 $$
+二、分数与根号 行内：$\frac{a}{b}$, $\sqrt{x^2 &#43; y^2}$。
+块级： $$ x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} $$
+三、积分与微分 行内：$\int_0^\infty e^{-x} , dx = 1$
+块级： $$ \frac{d}{dx} \sin x = \cos x $$
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-10-16 00:00:00 +0000 UTC'>October 16, 2025</span>&nbsp;·&nbsp;<span>windyJoy</span></footer>
-  <a class="entry-link" aria-label="post link to FFT是如何实现的" href="https://windyJoy.github.io/posts/fft%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">如何准备论文写作
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>如何在自己的领域内进行文献调研，并在该领域内发表期刊或会议论文呢？
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-09-24 00:00:00 +0000 UTC'>September 24, 2025</span>&nbsp;·&nbsp;<span>windyJoy</span></footer>
-  <a class="entry-link" aria-label="post link to 如何准备论文写作" href="https://windyJoy.github.io/posts/%E5%A6%82%E4%BD%95%E5%87%86%E5%A4%87%E8%AE%BA%E6%96%87%E5%86%99%E4%BD%9C/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">学术产业初探
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>从源头上了解一下学术界所谓的SCI期刊、期刊评级、学术会议等
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-09-19 00:00:00 +0000 UTC'>September 19, 2025</span>&nbsp;·&nbsp;<span>windyJoy</span></footer>
-  <a class="entry-link" aria-label="post link to 学术产业初探" href="https://windyJoy.github.io/posts/%E5%AD%A6%E6%9C%AF%E4%BA%A7%E4%B8%9A%E5%88%9D%E6%8E%A2/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">archLinux安装过程
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>在这篇文章中，我将分享我安装arch Linux的过程。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-09-18 00:00:00 +0000 UTC'>September 18, 2025</span>&nbsp;·&nbsp;<span>windyJoy</span></footer>
-  <a class="entry-link" aria-label="post link to archLinux安装过程" href="https://windyJoy.github.io/posts/archlinux%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">个人档案
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>简略的自我介绍
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-09-17 00:00:00 +0000 UTC'>September 17, 2025</span>&nbsp;·&nbsp;<span>windyJoy</span></footer>
-  <a class="entry-link" aria-label="post link to 个人档案" href="https://windyJoy.github.io/posts/%E4%B8%AA%E4%BA%BA%E6%A1%A3%E6%A1%88/"></a>
+  <footer class="entry-footer"><span title='2025-10-16 00:00:00 +0000 UTC'>October 16, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to 数学公式测试" href="http://localhost:40097/posts/latex-test/"></a>
 </article>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="https://windyJoy.github.io/">windyJoy</a></span> · 
+        <span>&copy; 2025 <a href="http://localhost:40097/">windyJoy</a></span> · 
 
     <span>
         Powered by
