@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto" data-theme="auto">
 
-<head><meta charset="utf-8">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="noindex, nofollow">
 <title>C&#43;&#43;中堆的基础应用 | windyJoy</title>
 <meta name="keywords" content="C&#43;&#43;, 算法">
 <meta name="description" content="记录算法">
 <meta name="author" content="windyJoy">
-<link rel="canonical" href="https://windyJoy.github.io/posts/c&#43;&#43;%E4%B8%AD%E5%A0%86%E7%9A%84%E5%9F%BA%E7%A1%80%E5%BA%94%E7%94%A8/">
+<link rel="canonical" href="http://localhost:1313/posts/c&#43;&#43;%E4%B8%AD%E5%A0%86%E7%9A%84%E5%9F%BA%E7%A1%80%E5%BA%94%E7%94%A8/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://windyJoy.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://windyJoy.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://windyJoy.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://windyJoy.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://windyJoy.github.io/safari-pinned-tab.svg">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="https://windyJoy.github.io/posts/c&#43;&#43;%E4%B8%AD%E5%A0%86%E7%9A%84%E5%9F%BA%E7%A1%80%E5%BA%94%E7%94%A8/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/c&#43;&#43;%E4%B8%AD%E5%A0%86%E7%9A%84%E5%9F%BA%E7%A1%80%E5%BA%94%E7%94%A8/">
 <noscript>
     <style>
         #theme-toggle,
@@ -86,81 +86,13 @@
       ],
     });"></script>
 
-<meta property="og:url" content="https://windyJoy.github.io/posts/c&#43;&#43;%E4%B8%AD%E5%A0%86%E7%9A%84%E5%9F%BA%E7%A1%80%E5%BA%94%E7%94%A8/">
-  <meta property="og:site_name" content="windyJoy">
-  <meta property="og:title" content="C&#43;&#43;中堆的基础应用">
-  <meta property="og:description" content="记录算法">
-  <meta property="og:locale" content="en">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2025-12-01T00:00:00+00:00">
-    <meta property="article:modified_time" content="2025-12-01T00:00:00+00:00">
-    <meta property="article:tag" content="C&#43;&#43;">
-    <meta property="article:tag" content="算法">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="C&#43;&#43;中堆的基础应用">
-<meta name="twitter:description" content="记录算法">
 
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "Posts",
-      "item": "https://windyJoy.github.io/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "C++中堆的基础应用",
-      "item": "https://windyJoy.github.io/posts/c++%E4%B8%AD%E5%A0%86%E7%9A%84%E5%9F%BA%E7%A1%80%E5%BA%94%E7%94%A8/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "C++中堆的基础应用",
-  "name": "C\u002b\u002b中堆的基础应用",
-  "description": "记录算法\n",
-  "keywords": [
-    "C++", "算法"
-  ],
-  "articleBody": "记录算法\n基本概念 堆是一种特殊的完全二叉树（除了最后一层，其他层都是满的，且最后一层节点靠左排列）。其每个节点的值都满足与子节点的特定大小关系。因此堆分为最大堆和最小堆。在C++中，堆的元素存储在数组中，并利用索引关系表示树结构。对于任意节点在数组中的位置 i，其父节点的位置为(i-1)/2，左子节点的位置为2*i+1，右子节点的位置为2*i+2。C++的标准库提供了priority_queue容器实现堆和中的堆算法堆化数组。\n优先队列 创建最大堆：\npriority_queue\u003cint\u003e max_heap; priority_queue\u003cint,vector\u003cint\u003e,less\u003cint\u003e\u003e max_heap; 创建最小堆：\npriority_queue\u003cint,vector\u003cint\u003e,greater\u003cint\u003e\u003e min_heap; C++默认是使用升序排列，所以最大堆有简略的写法。但是最小堆就得显示表明。\n初始化堆的两种方式：\npriority_queue\u003cint\u003e max_heap; for(int x:nums) max_heap.push(x); priority_queue\u003cint,vector\u003cint\u003e,greater\u003cint\u003e\u003e min_heap(nums.begin(),nums.end()); 当堆存储的元素不为单一的int,为其他类型时，例如tuple元组：\npriority_queue\u003ctuple\u003cint,int\u003e,vector\u003ctuple\u003cint,int\u003e\u003e,greater\u003c\u003e\u003e minHeap; //有三种方式: // 1. emplace minHeap.emplace(1, 2); // 直接构造，最高效 // 2. push + make_tuple minHeap.push(make_tuple(1, 2)); // 使用辅助函数 // 3. push + 显式构造 minHeap.push(tuple\u003cint, int\u003e(1, 2)); // 显式指定类型 当最小堆使用元组当元素时，其比较规则为：\n比较第一个元素 如果相等，比较第二个元素 如果还相等，比较第三个元素 以此类推 堆化数组 #include #include vector\u003cint\u003e nums = {3,6,5,1,2} //vector堆化 make_heap(nums.begin(),nums.end()) for(int x:nums) cout \u003c\u003c x; //随机访问并修改元素 nums[3]=9; make_heap(nums.begin(),nums.end()) //vector末尾添加元素 nums.push_back(9) push_heap(nums.begin(),nums.end()) //弹出元素 pop_heap(nums.begin(),nums.end()) nums.pop_back() 优先队列不可以随机访问其中的元素，只能访问堆的头元素，vector支持随机访问，vector堆化在保留堆数据结构的基础上支持随机访问，但是需要手动维护堆的数据结构。\n基本应用 Top K 问题 拿到一个数组，想要找到其第k大的数字，有两种方式：\n对数组排序。 维护一个大小为k的最小堆，遍历整个数组。 方面 堆方法 排序方法 时间复杂度 $O(nlogk)$ $O(nlogn)$ 空间复杂度 $O(k)$ $O(n)$ 适用场景 $k«n$ 需要完全排序 堆的O(log n)插入删除和O(1)获取极值的特性，使其在某些场景中非常高效\n",
-  "wordCount" : "102",
-  "inLanguage": "en",
-  "datePublished": "2025-12-01T00:00:00Z",
-  "dateModified": "2025-12-01T00:00:00Z",
-  "author":{
-    "@type": "Person",
-    "name": "windyJoy"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://windyJoy.github.io/posts/c++%E4%B8%AD%E5%A0%86%E7%9A%84%E5%9F%BA%E7%A1%80%E5%BA%94%E7%94%A8/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "windyJoy",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://windyJoy.github.io/favicon.ico"
-    }
-  }
-}
-</script>
 </head>
 <body id="top">
     <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://windyJoy.github.io/" accesskey="h" title="windyJoy (Alt + H)">windyJoy</a>
+            <a href="http://localhost:1313/" accesskey="h" title="windyJoy (Alt + H)">windyJoy</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -186,7 +118,7 @@
         </div>
         <ul id="menu">
             <li>
-                <a href="https://windyJoy.github.io/tags/" title="Tags">
+                <a href="http://localhost:1313/tags/" title="Tags">
                     <span>Tags</span>
                 </a>
             </li>
@@ -324,15 +256,15 @@
 
   <footer class="post-footer">
     <ul class="post-tags">
-      <li><a href="https://windyJoy.github.io/tags/c&#43;&#43;/">C&#43;&#43;</a></li>
-      <li><a href="https://windyJoy.github.io/tags/%E7%AE%97%E6%B3%95/">算法</a></li>
+      <li><a href="http://localhost:1313/tags/c&#43;&#43;/">C&#43;&#43;</a></li>
+      <li><a href="http://localhost:1313/tags/%E7%AE%97%E6%B3%95/">算法</a></li>
     </ul>
   </footer>
 </article>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2026 <a href="https://windyJoy.github.io/">windyJoy</a></span> · 
+        <span>&copy; 2026 <a href="http://localhost:1313/">windyJoy</a></span> · 
 
     <span>
         Powered by
